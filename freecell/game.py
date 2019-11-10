@@ -105,7 +105,7 @@ class Game:
 
     def pop_from_free(self, slot):
         card = self.freecells.pop(slot)
-        self.events.append((len(self.freecells), 0))
+        self.events.append((slot, 0))
         self.undos.append((self.undo_pop_from_free, slot, card))
         return card
 
@@ -163,7 +163,6 @@ class Game:
     def undo(self):
         if self.undos:
             func, *args = self.undos.pop()
-            print(args, file=open('log', 'a'))
             func(*args)
 
     @property
