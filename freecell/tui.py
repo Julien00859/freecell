@@ -98,10 +98,11 @@ def key_right(state, game):
 
 def key_space(state, game):
     if not state['from']:
-        if (
-            state['y'] == 1
-            or state['x'] < 4  # skip foundation
-            or game.freecells.slots[state['x']] is not placeholder
+        if ((state['y'] == 1
+             and game.columns[state['x']].cards)
+            or (state['y'] == 0
+                and state['x'] < 4
+                and game.freecells.slots[state['x']] is not placeholder)
         ):  
             state['from'] = (state['x'], state['y'])
     elif state['from'] == (state['x'], state['y']):
