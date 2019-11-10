@@ -51,7 +51,10 @@ def highlight(stdscr, game, state):
     _highlight(state['from'], curses.A_STANDOUT)
     _highlight(state['to'], curses.A_NORMAL)
 
-def main(stdscr, game):
+def log(stdscr, *log, sep=" "):
+    stdscr.addstr(17, 0, format(sep.join(map(str, log)), '<79'))
+
+def main(stdscr, game, debug):
     stdscr.clear()
     refresh_all(stdscr, game)
 
@@ -72,6 +75,8 @@ def main(stdscr, game):
         state = dispatch_key(key, state, game)
         highlight(stdscr, game, state)
         updates = play(game, state)
+        if debug:
+            log(stdscr, updates)
         refresh(stdscr, game, updates)
 
 
