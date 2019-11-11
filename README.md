@@ -15,3 +15,11 @@ Terminal (ncruses) implementation of the freecell solitaire game.
      6♢                  6♣
      5♠                  5♢
                          4♣
+
+Setup
+-----
+
+The package is available on my own repository. As it requires `ncurses` to run, it won't work on windows natively.
+
+    $ pip3 -i https://pypi.drlazor.be/ freecell
+    $ python3 -m freecell
