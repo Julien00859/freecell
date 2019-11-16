@@ -21,14 +21,16 @@ class Value(enum.IntEnum):
 
 
 class Symbol(enum.Enum):
-    SPADE = '\u2660'
-    HEART = '\u2661'
-    DIAMOND = '\u2662'
-    CLUB = '\u2663'
+    SPADE = "\u2660"
+    HEART = "\u2661"
+    DIAMOND = "\u2662"
+    CLUB = "\u2663"
+
 
 class Color(enum.Enum):
-    RED = 'red'
-    BLACK = 'black'
+    RED = "red"
+    BLACK = "black"
+
 
 class Card:
     def __init__(self, name, symbol):
@@ -37,7 +39,7 @@ class Card:
         self.symbol = symbol
 
     def __str__(self):
-        if self.name in {'ACE', 'JACK', 'QUEEN', 'KING'}:
+        if self.name in {"ACE", "JACK", "QUEEN", "KING"}:
             name = self.name[0]
         else:
             name = str(self.value)
@@ -56,7 +58,6 @@ class Card:
     @property
     def color(self):
         return Color.BLACK if self.symbol in (Symbol.SPADE, Symbol.CLUB) else Color.RED
-    
 
 
 class Deck:

@@ -1,18 +1,26 @@
 from freecell.deck import Deck, Card, Symbol, Value
 from operator import itemgetter
 
+
 class BlankCard:
     name = ""
     value = 0
+
     def __str__(self):
         return "   "
+
+
 class Placeholder:
     name = ""
     value = 0
+
     def __str__(self):
         return " _ "
+
+
 blank_card = BlankCard()
 placeholder = Placeholder()
+
 
 class Foundation:
     def __init__(self):
@@ -20,7 +28,7 @@ class Foundation:
             Symbol.HEART: [placeholder],
             Symbol.SPADE: [placeholder],
             Symbol.DIAMOND: [placeholder],
-            Symbol.CLUB: [placeholder]
+            Symbol.CLUB: [placeholder],
         }
 
     def __iter__(self):
@@ -41,14 +49,12 @@ class Foundation:
 
     def min_red_value(self):
         return min(
-            self.slots[Symbol.HEART][-1].value,
-            self.slots[Symbol.DIAMOND][-1].value
+            self.slots[Symbol.HEART][-1].value, self.slots[Symbol.DIAMOND][-1].value
         )
-    
+
     def min_black_value(self):
         return min(
-            self.slots[Symbol.SPADE][-1].value,
-            self.slots[Symbol.CLUB][-1].value
+            self.slots[Symbol.SPADE][-1].value, self.slots[Symbol.CLUB][-1].value
         )
 
     def __getitem__(self, i):
@@ -56,8 +62,6 @@ class Foundation:
 
     def index(self, symbol):
         return list(self.slots.keys()).index(symbol)
-
-
 
 
 class Freecell:
@@ -78,7 +82,7 @@ class Freecell:
             if slot is placeholder:
                 self.slots[slot_no] = card
                 return slot_no
-        raise ValueError('No free cell')
+        raise ValueError("No free cell")
 
     def pop(self, slot):
         card = self.slots[slot]
@@ -116,16 +120,12 @@ class Game:
     def add_to_col(self, column, card):
         if self.columns[column].cards:
             bottom_card = self.columns[column].cards[-1]
-            allowed = (
-            )
+            allowed = ()
         else:
             allowed = True
-        if ((not self.columns[column].cards)
-            or (
-                bottom_card.color != card.color
-                and bottom_card.value == card.value + 1
-            )
-           ):
+        if (not self.columns[column].cards) or (
+            bottom_card.color != card.color and bottom_card.value == card.value + 1
+        ):
             self.columns[column].append(card)
             self.events.append((column, len(self.columns[column]) + 1))
             self.undos.append((self.undo_add_to_col, column))
@@ -171,4 +171,3 @@ class Game:
             cards[-1].name == Value.KING.name
             for cards in self.foundations.slots.values()
         )
-    
