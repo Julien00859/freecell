@@ -23,3 +23,11 @@ The package is available on my own repository. As it requires `ncurses` to run, 
 
     $ pip3 -i https://pypi.drlazor.be/ freecell
     $ python3 -m freecell
+
+How to play ?
+-------------
+
+* arrows: move cursor
+* space: select/move card
+* backspace: undo
+* escape: quit
