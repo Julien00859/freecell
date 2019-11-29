@@ -1,5 +1,7 @@
 from freecell.deck import Deck, Card, Symbol, Value
 from operator import itemgetter
+from itertools import zip_longest
+from io import StringIO
 
 
 class BlankCard:
@@ -171,3 +173,18 @@ class Game:
             cards[-1].name == Value.KING.name
             for cards in self.foundations.slots.values()
         )
+
+    def __str__(self):
+        def align(c):
+            return format(str(c), ">3")
+
+        with StringIO() as stream:
+            stream.write("{freecells} | {foundations}\n".format(
+                freecells = " ".join(map(align, self.freecells)),
+                foundations = " ".join(map(align, self.foundations)),
+            ))
+            stream.write(" %s\n" % ("-" * 33))
+            for row in zip_longest(*self.columns, fillvalue=blank_card):
+                stream.write("%s\n" % " ".join(map(align, row)))
+
+            return stream.getvalue()
