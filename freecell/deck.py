@@ -46,7 +46,7 @@ class Card:
         return name + self.symbol.value
 
     def __hash__(self):
-        return (self.value - 1) + len(Name) * list(Symbol).index(self.symbol)
+        return (self.value - 1) + len(Value) * list(Symbol).index(self.symbol) + 2
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -58,6 +58,12 @@ class Card:
     @property
     def color(self):
         return Color.BLACK if self.symbol in (Symbol.SPADE, Symbol.CLUB) else Color.RED
+
+    @classmethod
+    def from_hash(cls, hash_):
+        name = list(Value)[(hash_ - 2) % len(Value)]
+        symbol = list(Symbol)[(hash_ - 2) // len(Value)]
+        return cls(name, symbol)
 
 
 class Deck:
@@ -101,3 +107,4 @@ class Deck:
 
     def append(self, card):
         return self.cards.append(card)
+        

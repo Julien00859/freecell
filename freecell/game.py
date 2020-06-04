@@ -1,6 +1,6 @@
 from freecell.deck import Deck, Card, Symbol, Value
 from operator import itemgetter
-from itertools import zip_longest
+from itertools import zip_longest, chain, count, cycle
 from io import StringIO
 
 
@@ -11,6 +11,9 @@ class BlankCard:
     def __str__(self):
         return "   "
 
+    def __hash__(self):
+        return 1
+
 
 class Placeholder:
     name = ""
@@ -18,6 +21,9 @@ class Placeholder:
 
     def __str__(self):
         return " _ "
+
+    def __hash__(self):
+        return 1
 
 
 blank_card = BlankCard()
@@ -76,6 +82,9 @@ class Freecell:
     def __len__(self):
         return len([s for s in self.slots if s is not placeholder])
 
+    def __bool__(self):
+        return bool(len(self))
+
     def empty_cnt(self):
         return 4 - len(self)
 
@@ -98,6 +107,51 @@ class Game:
         self.freecells = Freecell()
         self.columns = Deck.create_full().shuffle().deal(8)
         self.undos = []
+
+    def freeze(self):
+        hashes = []
+        def digest(iterable):
+            hash_ = 0
+            for card in iterable:
+                hash_ = (hash_ << 8) + hash(card)
+            return hash_
+
+        def len_digest(iterable):
+            return (len(iterable), digest(iterable))
+
+        def hold(hash_):
+            for i in range(hash_.bit_length() // 8, -1, -1):
+                hashes.append((hash_ & (255 << 8 * i)) >> (8 * i))
+
+        
+        hold(digest(sorted(self.freecells, key=hash)))
+        hold(digest(self.foundations))
+        for line in zip_longest(*sorted(self.columns, key=len_digest), fillvalue=blank_card):
+            hold(digest(line))
+        return bytes(hashes)
+
+    @classmethod
+    def restore(cls, frozen_game):
+
+        hashes = iter(frozen_game)
+        game = cls()
+        game.columns = [Deck() for _ in range(8)]
+
+        for h, _ in zip(hashes, range(3)):
+            if h != 1:
+                game.freecells.add(Card.from_hash(h))
+
+        for h, _ in zip(hashes, range(3)):
+            if h != 1:
+                card = Card.from_hash(h)
+                if card:
+                    game.foundations.slots[card.symbol] = [card]
+
+        for h, col in zip(hashes, cycle(game.columns)):
+            if h != 1:
+                col.append(Card.from_hash(h))
+
+        return game
 
     def pop_from_col(self, column):
         card = self.columns[column].pop()
@@ -122,9 +176,6 @@ class Game:
     def add_to_col(self, column, card):
         if self.columns[column].cards:
             bottom_card = self.columns[column].cards[-1]
-            allowed = ()
-        else:
-            allowed = True
         if (not self.columns[column].cards) or (
             bottom_card.color != card.color and bottom_card.value == card.value + 1
         ):
