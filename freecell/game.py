@@ -33,17 +33,18 @@ placeholder = Placeholder()
 class Foundation:
     def __init__(self):
         self.slots = {
-            Symbol.HEART: [placeholder],
-            Symbol.SPADE: [placeholder],
-            Symbol.DIAMOND: [placeholder],
-            Symbol.CLUB: [placeholder],
+            # weird bug, need to hash here
+            hash(Symbol.HEART): [placeholder],
+            hash(Symbol.SPADE): [placeholder],
+            hash(Symbol.DIAMOND): [placeholder],
+            hash(Symbol.CLUB): [placeholder],
         }
 
     def __iter__(self):
         return iter(map(itemgetter(-1), self.slots.values()))
 
     def can_add(self, card):
-        top_card = self.slots[card.symbol][-1]
+        top_card = self.slots[hash(card.symbol)][-1]
         if top_card is placeholder:
             return card.value == 1
         else:
@@ -51,25 +52,25 @@ class Foundation:
 
     def add(self, card):
         if self.can_add(card):
-            self.slots[card.symbol].append(card)
+            self.slots[hash(card.symbol)].append(card)
         else:
             raise ValueError("Invalid Operation")
 
     def min_red_value(self):
         return min(
-            self.slots[Symbol.HEART][-1].value, self.slots[Symbol.DIAMOND][-1].value
+            self.slots[hash(Symbol.HEART)][-1].value, self.slots[hash(Symbol.DIAMOND)][-1].value
         )
 
     def min_black_value(self):
         return min(
-            self.slots[Symbol.SPADE][-1].value, self.slots[Symbol.CLUB][-1].value
+            self.slots[hash(Symbol.SPADE)][-1].value, self.slots[hash(Symbol.CLUB)][-1].value
         )
 
     def __getitem__(self, i):
         return self.slots[list(self.slots.keys())[i]][-1]
 
     def index(self, symbol):
-        return list(self.slots.keys()).index(symbol)
+        return list(self.slots.keys()).index(hash(symbol))
 
 
 class Freecell:
@@ -234,7 +235,7 @@ class Game:
                 freecells = " ".join(map(align, self.freecells)),
                 foundations = " ".join(map(align, self.foundations)),
             ))
-            stream.write(" %s\n" % ("-" * 33))
+            stream.write("%s\n" % ("-" * 33))
             for row in zip_longest(*self.columns, fillvalue=blank_card):
                 stream.write("%s\n" % " ".join(map(align, row)))
 

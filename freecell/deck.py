@@ -38,7 +38,7 @@ class Card:
         self.value = name.value
         self.symbol = symbol
 
-    def __str__(self):
+    def __repr__(self):
         if self.name in {"ACE", "JACK", "QUEEN", "KING"}:
             name = self.name[0]
         else:
